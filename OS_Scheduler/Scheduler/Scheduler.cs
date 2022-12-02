@@ -26,6 +26,71 @@ namespace OS_Scheduler.Scheduler
 
         #endregion
 
+        #region Properties
+
+        public Int32 QuantOfTime
+        {
+            get
+            {
+                return quantOfTime;
+            }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException();
+                quantOfTime = value;
+            }
+        }
+        public Int32 RamSize
+        {
+            get
+            {
+                return ramSize;
+            }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException();
+                ramSize = value;
+            }
+        }
+        public Int32 RamLeft
+        {
+            get
+            {
+                return ramLeft;
+            }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException();
+                ramLeft = value;
+            }
+        }
+        public Int32 CurrentQuant
+        {
+            get
+            {
+                return currentQuant;
+            }
+        }
+        public Int32 SpeedOfWork
+        {
+            get
+            {
+                return speedOfWork;
+            }
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException();
+                speedOfWork = value;
+            }
+        }
+        public bool IsWorking => this.mainTimer.Enabled;
+
+        #endregion
+
         #region Events
 
         #region ViewerEvent
@@ -51,16 +116,13 @@ namespace OS_Scheduler.Scheduler
         private Scheduler()
         {
             this.mainTimer = new();
-            //this.viewTimer = new();
         }
-        public Scheduler(Int32 quantOfTime = 200, Int32 ramSize = 4096, 
-            Int32 mainTimerInterval = 1, Int32 viewTimerInterval = 400) : this()
+        public Scheduler(Int32 quantOfTime = 200, Int32 ramSize = 4096, Int32 mainTimerInterval = 1) : this()
         {
-            this.quantOfTime = quantOfTime;
-            this.ramSize = this.ramLeft = ramSize;
+            this.QuantOfTime = quantOfTime;
+            this.RamSize = this.RamLeft = ramSize;
 
             this.mainTimer.Interval = mainTimerInterval;
-            //this.viewTimer.Interval = viewTimerInterval;
 
             this.mainTimer.Elapsed += this.MainTimer_Elapsed;
         }
@@ -82,11 +144,14 @@ namespace OS_Scheduler.Scheduler
 
         private void NextCircle()
         {
+            if (this.queue.Processes.First().IsWorking)
+                this.queue.Processes.First().PauseWork();
+
             while (true)
             {
                 if (this.queue.Processes.First().IsWorking)
                     this.queue.Processes.First().PauseWork();
-                
+
                 this.queue.NextMoveInCircle();
 
                 var vs = this.queue.Processes.First();
@@ -107,9 +172,25 @@ namespace OS_Scheduler.Scheduler
 
         #endregion
 
+        #region WorkState
+
+        public void StartWork()
+        {
+            if (!this.mainTimer.Enabled)
+                this.mainTimer.Start();
+        }
+
+        public void StopWork()
+        {
+            if (this.mainTimer.Enabled)
+                this.mainTimer.Stop();
+        }
+
+        #endregion
+
         #region Other
 
-        public void CreateNewProcess(String Name, Int32 PPID, 
+        public void CreateNewProcess(String Name, Int32 PPID,
             Process.Priorities priority, Int32 RID, Int32 TimeToWork, Int32 Size)
         {
             var process = new Process(Name, PPID, priority, RID, TimeToWork, Size);
@@ -131,9 +212,32 @@ namespace OS_Scheduler.Scheduler
             SchedulerViewerEvent?.Invoke(this, new(this.queue.Processes));
         }
 
+
         public void KillProcess(Process process)
         {
             process.Kill();
+        }
+
+        public void KillProcess(Int32 PID)
+        {
+            try
+            {
+                this.queue.Processes.First(x => x.PID.Equals(PID)).Kill();
+            }
+            catch
+            {
+                throw new Exception();
+            }
+        }
+
+        public void ChangeProcess(Process process, 
+            Process.Priorities? priority = null, String? name = null)
+        {
+            if (process is null)
+                throw new ArgumentNullException("process");
+
+            process.NN = priority ?? process.NN;
+            process.Name = name ?? process.Name;
         }
 
         #endregion

@@ -134,6 +134,7 @@ namespace OS_Scheduler.Scheduler
             private set
             {
                 state = value;
+                ProcessStateChangeEvent?.Invoke(this, new(this.state));
             }
         }
 
@@ -202,7 +203,7 @@ namespace OS_Scheduler.Scheduler
             {
                 return name;
             }
-            private set
+            set
             {
                 name = value;
             }
@@ -293,19 +294,19 @@ namespace OS_Scheduler.Scheduler
         {
             if (this.State is States.COMPLETED)
             {
-
+                throw new Exception();
             }
             if (this.State is States.KILLED)
             {
-
+                throw new Exception();
             }
             if (this.State is States.RUNNING)
             {
-
+                throw new Exception();
             }
             if (this.State is States.UNBORN)
             {
-
+                throw new Exception();
             }
             this.State = States.RUNNING;
             this.timer.Interval = quant;
@@ -318,7 +319,8 @@ namespace OS_Scheduler.Scheduler
         /// </summary>
         public void PauseWork()
         {
-            this.timer.Stop();
+            if (this.IsWorking)
+                this.timer.Stop();
             
             if (this.State is States.COMPLETED || this.State is States.KILLED)
                 return;
