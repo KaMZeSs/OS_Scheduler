@@ -31,11 +31,12 @@
             this.OK_Button = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
             this.Priority_ComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // OK_Button
             // 
-            this.OK_Button.Location = new System.Drawing.Point(12, 41);
+            this.OK_Button.Location = new System.Drawing.Point(10, 57);
             this.OK_Button.Name = "OK_Button";
             this.OK_Button.Size = new System.Drawing.Size(75, 23);
             this.OK_Button.TabIndex = 1;
@@ -45,7 +46,7 @@
             // 
             // Cancel_Button
             // 
-            this.Cancel_Button.Location = new System.Drawing.Point(93, 41);
+            this.Cancel_Button.Location = new System.Drawing.Point(141, 57);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 2;
@@ -57,10 +58,19 @@
             // 
             this.Priority_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Priority_ComboBox.FormattingEnabled = true;
-            this.Priority_ComboBox.Location = new System.Drawing.Point(12, 12);
+            this.Priority_ComboBox.Location = new System.Drawing.Point(10, 28);
             this.Priority_ComboBox.Name = "Priority_ComboBox";
-            this.Priority_ComboBox.Size = new System.Drawing.Size(156, 23);
+            this.Priority_ComboBox.Size = new System.Drawing.Size(206, 23);
             this.Priority_ComboBox.TabIndex = 3;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(10, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(122, 15);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Выберите приоритет";
             // 
             // GetElFromEnumForm
             // 
@@ -68,14 +78,16 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(178, 72);
+            this.ClientSize = new System.Drawing.Size(228, 92);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.Priority_ComboBox);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.OK_Button);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "GetElFromEnumForm";
-            this.Text = "GetPriorityForm";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -83,5 +95,6 @@
         private Button OK_Button;
         private Button Cancel_Button;
         private ComboBox Priority_ComboBox;
+        private Label label1;
     }
 }

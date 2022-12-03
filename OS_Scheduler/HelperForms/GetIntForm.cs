@@ -22,9 +22,10 @@ namespace OS_Scheduler.HelperForms
             InitializeComponent();
         }
 
-        public GetIntForm(int upperBound, int lowerBound = 1)
+        public GetIntForm(String str, int upperBound, int lowerBound = 1)
             : this()
         {
+            this.label1.Text = str;
             this.upperBound = upperBound;
             this.lowerBound = lowerBound;
         }

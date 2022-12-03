@@ -51,6 +51,7 @@ namespace OS_Scheduler.Scheduler
         bool isSwapped;
         String name;
         Timer timer;
+        bool isInfinite;
 
         #endregion
 
@@ -229,6 +230,8 @@ namespace OS_Scheduler.Scheduler
             } 
         }
 
+        public bool IsDisposed => isDisposed;
+
         #endregion
 
         #region Dispose
@@ -269,6 +272,7 @@ namespace OS_Scheduler.Scheduler
             this.realId = realId;
             this.timeLeft = timeLeft;
             this.size = size;
+            this.isInfinite = timeLeft is -1;
         }
 
         #endregion
@@ -370,10 +374,10 @@ namespace OS_Scheduler.Scheduler
         /// <exception cref="NotImplementedException"></exception>
         private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            if (this.TimeLeft is -1)
+            if (this.isInfinite)
                 return;
             this.TimeLeft--;
-            if (this.TimeLeft is 0)
+            if (this.TimeLeft <= 0)
             {
                 this.CompleteWork();
             }
@@ -420,6 +424,12 @@ namespace OS_Scheduler.Scheduler
         #endregion
 
         #region StateChange
+
+        public void SetUnborn()
+        {
+            this.State = States.UNBORN;
+            this.Dispose();
+        }
 
         /// <summary>
         /// Установить состояние READY.

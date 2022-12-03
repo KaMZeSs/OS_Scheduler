@@ -34,6 +34,8 @@
             this.ProcessesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateProcessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChangeSelectedProcessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ChangePriorityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ChangeNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.KillSelectedProcessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.UsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.AddUserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,7 +83,7 @@
             // SettingsToolStripMenuItem
             // 
             this.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem";
-            this.SettingsToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.SettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.SettingsToolStripMenuItem.Text = "Параметры";
             // 
             // ProcessesToolStripMenuItem
@@ -91,7 +93,7 @@
             this.ChangeSelectedProcessToolStripMenuItem,
             this.KillSelectedProcessToolStripMenuItem});
             this.ProcessesToolStripMenuItem.Name = "ProcessesToolStripMenuItem";
-            this.ProcessesToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.ProcessesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.ProcessesToolStripMenuItem.Text = "Процессы";
             // 
             // CreateProcessToolStripMenuItem
@@ -103,15 +105,33 @@
             // 
             // ChangeSelectedProcessToolStripMenuItem
             // 
+            this.ChangeSelectedProcessToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ChangePriorityToolStripMenuItem,
+            this.ChangeNameToolStripMenuItem});
             this.ChangeSelectedProcessToolStripMenuItem.Name = "ChangeSelectedProcessToolStripMenuItem";
             this.ChangeSelectedProcessToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.ChangeSelectedProcessToolStripMenuItem.Text = "Изменить выделенный процесс";
+            // 
+            // ChangePriorityToolStripMenuItem
+            // 
+            this.ChangePriorityToolStripMenuItem.Name = "ChangePriorityToolStripMenuItem";
+            this.ChangePriorityToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.ChangePriorityToolStripMenuItem.Text = "Изменить приоритет";
+            this.ChangePriorityToolStripMenuItem.Click += new System.EventHandler(this.ChangePriorityToolStripMenuItem_Click);
+            // 
+            // ChangeNameToolStripMenuItem
+            // 
+            this.ChangeNameToolStripMenuItem.Name = "ChangeNameToolStripMenuItem";
+            this.ChangeNameToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.ChangeNameToolStripMenuItem.Text = "Изменить имя";
+            this.ChangeNameToolStripMenuItem.Click += new System.EventHandler(this.ChangeNameToolStripMenuItem_Click);
             // 
             // KillSelectedProcessToolStripMenuItem
             // 
             this.KillSelectedProcessToolStripMenuItem.Name = "KillSelectedProcessToolStripMenuItem";
             this.KillSelectedProcessToolStripMenuItem.Size = new System.Drawing.Size(250, 22);
             this.KillSelectedProcessToolStripMenuItem.Text = "Удалить выделенный процесс";
+            this.KillSelectedProcessToolStripMenuItem.Click += new System.EventHandler(this.KillSelectedProcessToolStripMenuItem_Click);
             // 
             // UsersToolStripMenuItem
             // 
@@ -169,6 +189,7 @@
             this.ProcessesDataGridView.AllowUserToAddRows = false;
             this.ProcessesDataGridView.AllowUserToDeleteRows = false;
             this.ProcessesDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ProcessesDataGridView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.ProcessesDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ProcessesDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.PID_Column,
@@ -187,6 +208,7 @@
             this.ProcessesDataGridView.Name = "ProcessesDataGridView";
             this.ProcessesDataGridView.ReadOnly = true;
             this.ProcessesDataGridView.RowTemplate.Height = 25;
+            this.ProcessesDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.ProcessesDataGridView.Size = new System.Drawing.Size(1011, 404);
             this.ProcessesDataGridView.TabIndex = 3;
             // 
@@ -302,5 +324,7 @@
         private DataGridViewTextBoxColumn Size_Column;
         private DataGridViewCheckBoxColumn IsSwappedColumn;
         private DataGridViewTextBoxColumn EmptyColumn;
+        private ToolStripMenuItem ChangePriorityToolStripMenuItem;
+        private ToolStripMenuItem ChangeNameToolStripMenuItem;
     }
 }

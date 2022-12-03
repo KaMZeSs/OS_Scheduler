@@ -1,5 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-
 namespace OS_Scheduler
 {
     public partial class MainForm : Form
@@ -9,33 +7,17 @@ namespace OS_Scheduler
         public MainForm()
         {
             InitializeComponent();
+            this.ProcessesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
             Scheduler.ProcessQueue processQueue = new();
 
             scheduler = new();
-            //scheduler.SchedulerViewerEvent += this.Scheduler_SchedulerViewerEvent;
 
             scheduler.StartWork();
         }
 
-        private void Scheduler_SchedulerViewerEvent(object sender, Scheduler.Scheduler.SchedulerViewerEventArgs e)
+        private void AddProcessRangeToTable(Scheduler.Process[] processes)
         {
-            try
-            {
-                this.Invoke(() =>
-                {
-                    this.ViewProcesses(e.Processes.ToArray());
-                });
-            }
-            catch
-            {
-                scheduler.StopWork();
-            }
-        }
-
-        private void ViewProcesses(Scheduler.Process[] processes)
-        {
-            this.ProcessesDataGridView.Rows.Clear();
             foreach (Scheduler.Process process in processes)
             {
                 var index = this.ProcessesDataGridView.Rows.Add();
@@ -66,13 +48,13 @@ namespace OS_Scheduler
                 return;
             }
 
-            var timeForm = new HelperForms.GetIntForm(Int32.MaxValue);
+            var timeForm = new HelperForms.GetIntForm("Введите количество работы", Int32.MaxValue);
             if (timeForm.ShowDialog() is not DialogResult.OK)
             {
                 return;
             }
 
-            var sizeForm = new HelperForms.GetIntForm(300);
+            var sizeForm = new HelperForms.GetIntForm("Введите размер процесса", 300);
             if (sizeForm.ShowDialog() is not DialogResult.OK)
             {
                 return;
@@ -80,6 +62,7 @@ namespace OS_Scheduler
 
             var proc = scheduler.CreateNewProcess(nameForm.Value, 0, priorityForm.Value, 0, timeForm.Value, sizeForm.Value);
             proc.ProcessPropertyChangeEvent += this.Proc_ProcessPropertyChangeEvent;
+            this.AddProcessRangeToTable(new[] { proc });
         }
 
         private void Proc_ProcessPropertyChangeEvent(object sender, Scheduler.Process.ProcessPropertyChangeEventArgs e)
@@ -99,21 +82,15 @@ namespace OS_Scheduler
 
         private void UpdateData(Scheduler.Process process, Scheduler.Process.ProcessPropertyChangeEventArgs e)
         {
-            var index = this.FindRowByPID(process.PID);
-            if (index is -1) // Добавить новую строку
+            if (process.IsDisposed)
             {
-                index = this.ProcessesDataGridView.Rows.Add();
+                return;
+            }
 
-                this.ProcessesDataGridView["PID_Column", index].Value = process.PID;
-                this.ProcessesDataGridView["PPID_Column", index].Value = process.PPID;
-                this.ProcessesDataGridView["Priority_Column", index].Value = process.NN;
-                this.ProcessesDataGridView["Name_Column", index].Value = process.Name;
-                this.ProcessesDataGridView["RID_Column", index].Value = process.RID;
-                this.ProcessesDataGridView["State_Column", index].Value = process.State;
-                this.ProcessesDataGridView["TimeLeft_Column", index].Value = process.TimeLeft;
-                this.ProcessesDataGridView["Size_Column", index].Value = process.Size;
-                this.ProcessesDataGridView["IsSwappedColumn", index].Value = process.IsSwapped;
+            var index = this.FindRowByPID(process.PID);
 
+            if (index is -1)
+            {
                 return;
             }
 
@@ -134,8 +111,13 @@ namespace OS_Scheduler
                     this.ProcessesDataGridView["RID_Column", index].Value = process.RID;
                     break;
                 }
-                case "State":
+                case "State": 
                 {
+                    if (process.State is Scheduler.Process.States.UNBORN) // Значит уже не в очереди
+                    {
+                        this.ProcessesDataGridView.Rows.RemoveAt(index);
+                        return;
+                    }
                     this.ProcessesDataGridView["State_Column", index].Value = process.State;
                     break;
                 }
@@ -186,6 +168,72 @@ namespace OS_Scheduler
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.scheduler.StopWork();
+        }
+
+        private void KillSelectedProcessToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ProcessesDataGridView.SelectedRows.Count is 0)
+                return;
+            int pid = (int)this.ProcessesDataGridView.SelectedRows[0].Cells["PID_Column"].Value;
+            this.scheduler.KillProcess(pid);
+        }
+
+        private void ChangeNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ProcessesDataGridView.SelectedRows.Count is 0)
+                return;
+
+            Scheduler.Process process;
+
+            try
+            {
+                int pid = (int)this.ProcessesDataGridView.SelectedRows[0].Cells["PID_Column"].Value;
+                process = this.scheduler.Processes.First(x => x.PID.Equals(pid));
+            }
+            catch
+            {
+                return;
+            }
+
+            var nameForm = new HelperForms.GetStringForm();
+            if (nameForm.ShowDialog() is not DialogResult.OK)
+            {
+                return;
+            }
+
+            if (process.IsDisposed)
+                return;
+            
+            process.Name = nameForm.Value;
+        }
+
+        private void ChangePriorityToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.ProcessesDataGridView.SelectedRows.Count is 0)
+                return;
+
+            Scheduler.Process process;
+
+            try
+            {
+                int pid = (int)this.ProcessesDataGridView.SelectedRows[0].Cells["PID_Column"].Value;
+                process = this.scheduler.Processes.First(x => x.PID.Equals(pid));
+            }
+            catch
+            {
+                return;
+            }
+
+            var priorityForm = new HelperForms.GetElFromEnumForm<Scheduler.Process.Priorities>();
+            if (priorityForm.ShowDialog() is not DialogResult.OK)
+            {
+                return;
+            }
+
+            if (process.IsDisposed)
+                return;
+
+            process.NN = priorityForm.Value;
         }
     }
 }

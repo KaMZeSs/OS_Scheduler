@@ -31,18 +31,19 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.OK_Button = new System.Windows.Forms.Button();
             this.Cancel_Button = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 12);
+            this.textBox1.Location = new System.Drawing.Point(10, 24);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(156, 23);
+            this.textBox1.Size = new System.Drawing.Size(199, 23);
             this.textBox1.TabIndex = 0;
             // 
             // OK_Button
             // 
-            this.OK_Button.Location = new System.Drawing.Point(12, 41);
+            this.OK_Button.Location = new System.Drawing.Point(10, 53);
             this.OK_Button.Name = "OK_Button";
             this.OK_Button.Size = new System.Drawing.Size(75, 23);
             this.OK_Button.TabIndex = 1;
@@ -52,7 +53,7 @@
             // 
             // Cancel_Button
             // 
-            this.Cancel_Button.Location = new System.Drawing.Point(93, 41);
+            this.Cancel_Button.Location = new System.Drawing.Point(134, 53);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Size = new System.Drawing.Size(75, 23);
             this.Cancel_Button.TabIndex = 2;
@@ -60,19 +61,29 @@
             this.Cancel_Button.UseVisualStyleBackColor = true;
             this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 6);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(87, 15);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Введите число";
+            // 
             // GetIntForm
             // 
             this.AcceptButton = this.OK_Button;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(178, 72);
+            this.ClientSize = new System.Drawing.Size(221, 88);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.OK_Button);
             this.Controls.Add(this.textBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "GetIntForm";
-            this.Text = "GetIntForm";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -83,5 +94,6 @@
         private TextBox textBox1;
         private Button OK_Button;
         private Button Cancel_Button;
+        private Label label1;
     }
 }

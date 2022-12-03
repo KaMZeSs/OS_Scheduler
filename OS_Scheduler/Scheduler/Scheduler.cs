@@ -89,6 +89,10 @@ namespace OS_Scheduler.Scheduler
         }
         public bool IsWorking => this.mainTimer.Enabled;
 
+        public IReadOnlyCollection<Process> Processes => queue.Processes;
+        public int RamUsage => queue.RamUsage;
+        public int MaxPossibleRamUsage => queue.MaxPossibleRamUsage;
+
         #endregion
 
         #region Events
@@ -174,6 +178,7 @@ namespace OS_Scheduler.Scheduler
 
                 if (vs.State is Process.States.KILLED || vs.State is Process.States.COMPLETED) // Если процесс убит, или закончил работу, значит надо удалить из очереди
                 {
+                    vs.SetUnborn();
                     this.queue.RemoveProcess(vs);
                 }
                 else
@@ -198,6 +203,15 @@ namespace OS_Scheduler.Scheduler
 
         public void StopWork()
         {
+            try
+            {
+                this.queue.Processes.First(x => x.IsWorking).PauseWork();
+            }
+            catch
+            {
+
+            }
+            
             if (this.mainTimer.Enabled)
                 this.mainTimer.Stop();
         }
@@ -213,6 +227,11 @@ namespace OS_Scheduler.Scheduler
             process.ProcessStateChangeEvent += this.Process_ProcessStateChangeEvent;
             this.queue.AddProcess(process);
             process.SetReady();
+
+            if (!this.IsWorking)
+            {
+                this.StartWork();
+            }
 
             return process;
         }
