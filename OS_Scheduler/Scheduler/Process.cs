@@ -8,7 +8,7 @@ using Timer = System.Timers.Timer;
 
 namespace OS_Scheduler.Scheduler
 {
-    internal class Process : IDisposable
+    public class Process : IDisposable
     {
         #region Static
 
@@ -89,6 +89,7 @@ namespace OS_Scheduler.Scheduler
             private set
             {
                 parentProcessId = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("PPID"));
             }
         }
 
@@ -104,6 +105,7 @@ namespace OS_Scheduler.Scheduler
             set
             {
                 niceNumber = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("NN"));
             }
         }
 
@@ -119,6 +121,7 @@ namespace OS_Scheduler.Scheduler
             private set
             {
                 realId = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("RID"));
             }
         }
 
@@ -135,6 +138,7 @@ namespace OS_Scheduler.Scheduler
             {
                 state = value;
                 ProcessStateChangeEvent?.Invoke(this, new(this.state));
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("State"));
             }
         }
 
@@ -161,6 +165,7 @@ namespace OS_Scheduler.Scheduler
             private set
             {
                 timeLeft = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("TimeLeft"));
             }
         }
 
@@ -176,6 +181,7 @@ namespace OS_Scheduler.Scheduler
             private set
             {
                 size = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("Size"));
             }
         }
 
@@ -191,6 +197,7 @@ namespace OS_Scheduler.Scheduler
             private set
             {
                 isSwapped = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("IsSwapped"));
             }
         }
 
@@ -206,6 +213,7 @@ namespace OS_Scheduler.Scheduler
             set
             {
                 name = value;
+                this.ProcessPropertyChangeEvent?.Invoke(this, new("Name"));
             }
         }
 
@@ -278,6 +286,18 @@ namespace OS_Scheduler.Scheduler
         }
         public delegate void ProcessStateChangeEventHandler(object sender, ProcessStateChangeEventArgs e);
         public event ProcessStateChangeEventHandler? ProcessStateChangeEvent;
+
+        public class ProcessPropertyChangeEventArgs
+        {
+            public String PropertyName { get; }
+
+            public ProcessPropertyChangeEventArgs(String PropertyName)
+            {
+                this.PropertyName = PropertyName;
+            }
+        }
+        public delegate void ProcessPropertyChangeEventHandler(object sender, ProcessPropertyChangeEventArgs e);
+        public event ProcessPropertyChangeEventHandler? ProcessPropertyChangeEvent;
 
         #endregion
 

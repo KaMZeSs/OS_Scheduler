@@ -44,7 +44,10 @@ namespace OS_Scheduler.Scheduler
                 }
                 else // Если не пуст - добавить после начального (тк первый - сейчас выполняется)
                 {
-                    list.Insert(1, process);
+                    if (list.First().IsWorking)
+                        list.Insert(1, process);
+                    else
+                        list.Insert(0, process);
                 }
             }
             else

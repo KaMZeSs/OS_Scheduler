@@ -116,6 +116,7 @@ namespace OS_Scheduler.Scheduler
         private Scheduler()
         {
             this.mainTimer = new();
+            this.queue = new();
         }
         public Scheduler(Int32 quantOfTime = 200, Int32 ramSize = 4096, Int32 mainTimerInterval = 1) : this()
         {
@@ -135,6 +136,7 @@ namespace OS_Scheduler.Scheduler
 
         private void MainTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
+            SchedulerViewerEvent?.Invoke(this, new(this.queue.Processes));
             currentQuant++;
             if (currentQuant < quantOfTime)
                 return;
@@ -144,13 +146,27 @@ namespace OS_Scheduler.Scheduler
 
         private void NextCircle()
         {
+            if (this.queue.Processes.Count is 0)
+            {
+                SchedulerViewerEvent?.Invoke(this, new(this.queue.Processes));
+                return;
+            }    
+
             if (this.queue.Processes.First().IsWorking)
                 this.queue.Processes.First().PauseWork();
 
             while (true)
             {
-                if (this.queue.Processes.First().IsWorking)
-                    this.queue.Processes.First().PauseWork();
+                try
+                {
+                    if (this.queue.Processes.First().IsWorking)
+                        this.queue.Processes.First().PauseWork();
+                }
+                catch
+                {
+                    break;
+                }
+                
 
                 this.queue.NextMoveInCircle();
 
@@ -190,13 +206,15 @@ namespace OS_Scheduler.Scheduler
 
         #region Other
 
-        public void CreateNewProcess(String Name, Int32 PPID,
+        public Process CreateNewProcess(String Name, Int32 PPID,
             Process.Priorities priority, Int32 RID, Int32 TimeToWork, Int32 Size)
         {
             var process = new Process(Name, PPID, priority, RID, TimeToWork, Size);
             process.ProcessStateChangeEvent += this.Process_ProcessStateChangeEvent;
             this.queue.AddProcess(process);
             process.SetReady();
+
+            return process;
         }
 
         private void Process_ProcessStateChangeEvent(object sender, Process.ProcessStateChangeEventArgs e)
