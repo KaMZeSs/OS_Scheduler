@@ -306,6 +306,10 @@ namespace OS_Scheduler.Scheduler
             {
                 this.queue.Processes.First(x => x.PID.Equals(PID)).Kill();
             }
+            catch (AggregateException)
+            {
+               
+            }
             catch
             {
                 throw new Exception();

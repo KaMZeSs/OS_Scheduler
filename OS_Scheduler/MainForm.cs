@@ -120,8 +120,23 @@ namespace OS_Scheduler
                     if (process.State is Scheduler.Process.States.UNBORN) // «начит уже не в очереди
                     {
                         this.ProcessesDataGridView.Rows.RemoveAt(index);
-                        await Task.Delay(50);
-                        this.UpdateRAMView();
+                        try
+                        {
+                            this.UpdateRAMView();
+                        }
+                        catch
+                        {
+                            try
+                            {
+                                await Task.Delay(10);
+                                this.UpdateRAMView();
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                        
                         return;
                     }
                     this.ProcessesDataGridView["State_Column", index].Value = process.State;

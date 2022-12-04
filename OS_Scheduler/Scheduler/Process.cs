@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -440,7 +441,7 @@ namespace OS_Scheduler.Scheduler
         {
             if (this.State is States.KILLED)
             {
-                throw new Exception();
+                throw new AggregateException();
             }
             this.State = States.KILLED;
             this.timer.Stop();
