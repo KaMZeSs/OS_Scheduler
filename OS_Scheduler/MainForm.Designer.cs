@@ -31,19 +31,16 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.SchedulerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.QuantSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RAMSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ProcessesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateProcessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChangeSelectedProcessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChangePriorityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChangeNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.KillSelectedProcessToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.UsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.AddUserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.DeleteUserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ListUsersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.RAMLeftToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.ToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.ProcessesDataGridView = new System.Windows.Forms.DataGridView();
             this.PID_Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PPID_Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -55,6 +52,7 @@
             this.Size_Column = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.IsSwappedColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.EmptyColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.GenerateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ProcessesDataGridView)).BeginInit();
@@ -64,7 +62,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.SchedulerToolStripMenuItem,
-            this.UsersToolStripMenuItem});
+            this.GenerateToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1011, 24);
@@ -82,9 +80,26 @@
             // 
             // SettingsToolStripMenuItem
             // 
+            this.SettingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.QuantSizeToolStripMenuItem,
+            this.RAMSizeToolStripMenuItem});
             this.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem";
             this.SettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.SettingsToolStripMenuItem.Text = "Параметры";
+            // 
+            // QuantSizeToolStripMenuItem
+            // 
+            this.QuantSizeToolStripMenuItem.Name = "QuantSizeToolStripMenuItem";
+            this.QuantSizeToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.QuantSizeToolStripMenuItem.Text = "Размер кванта";
+            this.QuantSizeToolStripMenuItem.Click += new System.EventHandler(this.QuantSizeToolStripMenuItem_Click);
+            // 
+            // RAMSizeToolStripMenuItem
+            // 
+            this.RAMSizeToolStripMenuItem.Name = "RAMSizeToolStripMenuItem";
+            this.RAMSizeToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.RAMSizeToolStripMenuItem.Text = "Количество ОЗУ";
+            this.RAMSizeToolStripMenuItem.Click += new System.EventHandler(this.RAMSizeToolStripMenuItem_Click);
             // 
             // ProcessesToolStripMenuItem
             // 
@@ -133,39 +148,10 @@
             this.KillSelectedProcessToolStripMenuItem.Text = "Удалить выделенный процесс";
             this.KillSelectedProcessToolStripMenuItem.Click += new System.EventHandler(this.KillSelectedProcessToolStripMenuItem_Click);
             // 
-            // UsersToolStripMenuItem
-            // 
-            this.UsersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.AddUserToolStripMenuItem,
-            this.DeleteUserToolStripMenuItem,
-            this.ListUsersToolStripMenuItem});
-            this.UsersToolStripMenuItem.Name = "UsersToolStripMenuItem";
-            this.UsersToolStripMenuItem.Size = new System.Drawing.Size(97, 20);
-            this.UsersToolStripMenuItem.Text = "Пользователи";
-            // 
-            // AddUserToolStripMenuItem
-            // 
-            this.AddUserToolStripMenuItem.Name = "AddUserToolStripMenuItem";
-            this.AddUserToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
-            this.AddUserToolStripMenuItem.Text = "Добавить";
-            // 
-            // DeleteUserToolStripMenuItem
-            // 
-            this.DeleteUserToolStripMenuItem.Name = "DeleteUserToolStripMenuItem";
-            this.DeleteUserToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
-            this.DeleteUserToolStripMenuItem.Text = "Удалить";
-            // 
-            // ListUsersToolStripMenuItem
-            // 
-            this.ListUsersToolStripMenuItem.Name = "ListUsersToolStripMenuItem";
-            this.ListUsersToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
-            this.ListUsersToolStripMenuItem.Text = "Список";
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.RAMLeftToolStripStatusLabel,
-            this.ToolStripStatusLabel});
+            this.RAMLeftToolStripStatusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 428);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1011, 22);
@@ -177,12 +163,6 @@
             this.RAMLeftToolStripStatusLabel.Name = "RAMLeftToolStripStatusLabel";
             this.RAMLeftToolStripStatusLabel.Size = new System.Drawing.Size(118, 17);
             this.RAMLeftToolStripStatusLabel.Text = "toolStripStatusLabel1";
-            // 
-            // ToolStripStatusLabel
-            // 
-            this.ToolStripStatusLabel.Name = "ToolStripStatusLabel";
-            this.ToolStripStatusLabel.Size = new System.Drawing.Size(118, 17);
-            this.ToolStripStatusLabel.Text = "toolStripStatusLabel1";
             // 
             // ProcessesDataGridView
             // 
@@ -275,6 +255,13 @@
             this.EmptyColumn.Name = "EmptyColumn";
             this.EmptyColumn.ReadOnly = true;
             // 
+            // GenerateToolStripMenuItem
+            // 
+            this.GenerateToolStripMenuItem.Name = "GenerateToolStripMenuItem";
+            this.GenerateToolStripMenuItem.Size = new System.Drawing.Size(77, 20);
+            this.GenerateToolStripMenuItem.Text = "Генерация";
+            this.GenerateToolStripMenuItem.Click += new System.EventHandler(this.GenerateToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -306,13 +293,8 @@
         private ToolStripMenuItem CreateProcessToolStripMenuItem;
         private ToolStripMenuItem ChangeSelectedProcessToolStripMenuItem;
         private ToolStripMenuItem KillSelectedProcessToolStripMenuItem;
-        private ToolStripMenuItem UsersToolStripMenuItem;
-        private ToolStripMenuItem AddUserToolStripMenuItem;
-        private ToolStripMenuItem DeleteUserToolStripMenuItem;
-        private ToolStripMenuItem ListUsersToolStripMenuItem;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel RAMLeftToolStripStatusLabel;
-        private ToolStripStatusLabel ToolStripStatusLabel;
         private DataGridView ProcessesDataGridView;
         private DataGridViewTextBoxColumn PID_Column;
         private DataGridViewTextBoxColumn PPID_Column;
@@ -326,5 +308,8 @@
         private DataGridViewTextBoxColumn EmptyColumn;
         private ToolStripMenuItem ChangePriorityToolStripMenuItem;
         private ToolStripMenuItem ChangeNameToolStripMenuItem;
+        private ToolStripMenuItem QuantSizeToolStripMenuItem;
+        private ToolStripMenuItem RAMSizeToolStripMenuItem;
+        private ToolStripMenuItem GenerateToolStripMenuItem;
     }
 }

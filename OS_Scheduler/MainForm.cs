@@ -14,6 +14,8 @@ namespace OS_Scheduler
             scheduler = new();
 
             scheduler.StartWork();
+
+            this.UpdateRAMView();
         }
 
         private void AddProcessRangeToTable(Scheduler.Process[] processes)
@@ -32,6 +34,8 @@ namespace OS_Scheduler
                 this.ProcessesDataGridView["Size_Column", index].Value = process.Size;
                 this.ProcessesDataGridView["IsSwappedColumn", index].Value = process.IsSwapped;
             }
+
+            this.UpdateRAMView();
         }
 
         private void CreateProcessToolStripMenuItem_Click(object sender, EventArgs e)
@@ -54,7 +58,7 @@ namespace OS_Scheduler
                 return;
             }
 
-            var sizeForm = new HelperForms.GetIntForm("¬ведите размер процесса", 300);
+            var sizeForm = new HelperForms.GetIntForm("¬ведите размер процесса", this.scheduler.RamSize);
             if (sizeForm.ShowDialog() is not DialogResult.OK)
             {
                 return;
@@ -80,7 +84,7 @@ namespace OS_Scheduler
             }
         }
 
-        private void UpdateData(Scheduler.Process process, Scheduler.Process.ProcessPropertyChangeEventArgs e)
+        private async void UpdateData(Scheduler.Process process, Scheduler.Process.ProcessPropertyChangeEventArgs e)
         {
             if (process.IsDisposed)
             {
@@ -116,6 +120,8 @@ namespace OS_Scheduler
                     if (process.State is Scheduler.Process.States.UNBORN) // «начит уже не в очереди
                     {
                         this.ProcessesDataGridView.Rows.RemoveAt(index);
+                        await Task.Delay(50);
+                        this.UpdateRAMView();
                         return;
                     }
                     this.ProcessesDataGridView["State_Column", index].Value = process.State;
@@ -134,6 +140,7 @@ namespace OS_Scheduler
                 case "IsSwapped":
                 {
                     this.ProcessesDataGridView["IsSwappedColumn", index].Value = process.IsSwapped;
+                    this.UpdateRAMView();
                     break;
                 }
                 case "Name":
@@ -176,6 +183,8 @@ namespace OS_Scheduler
                 return;
             int pid = (int)this.ProcessesDataGridView.SelectedRows[0].Cells["PID_Column"].Value;
             this.scheduler.KillProcess(pid);
+
+            this.UpdateRAMView();
         }
 
         private void ChangeNameToolStripMenuItem_Click(object sender, EventArgs e)
@@ -234,6 +243,63 @@ namespace OS_Scheduler
                 return;
 
             process.NN = priorityForm.Value;
+        }
+
+        private void UpdateRAMView()
+        {
+            this.RAMLeftToolStripStatusLabel.Text = $"—вободно {this.scheduler.RamSize - this.scheduler.RamUsage}";
+        }
+
+        private void QuantSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sizeForm = new HelperForms.GetIntForm("¬ведите размер кванта", Int32.MaxValue, 1);
+            if (sizeForm.ShowDialog() is not DialogResult.OK)
+            {
+                return;
+            }
+
+            this.scheduler.QuantOfTime = sizeForm.Value;
+        }
+
+        private void RAMSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sizeForm = new HelperForms.GetIntForm("¬ведите размер ќ«”", Int32.MaxValue, 
+                this.scheduler.MinimumPossibleRamUsage);
+            if (sizeForm.ShowDialog() is not DialogResult.OK)
+            {
+                return;
+            }
+
+            this.scheduler.RamSize = sizeForm.Value;
+
+            this.UpdateRAMView();
+        }
+
+        private void GenerateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sizeForm = new HelperForms.GetIntForm("¬ведите количество генерируемых процессов", 
+                Int32.MaxValue, 1);
+            if (sizeForm.ShowDialog() is not DialogResult.OK)
+            {
+                return;
+            }
+
+            var num = sizeForm.Value;
+
+            Random rnd = new Random();
+
+            for (int i = 0; i < num; i++)
+            {
+                var proc = this.scheduler.CreateNewProcess(
+                    $"Proc {rnd.Next()}", rnd.Next(),
+                    (Scheduler.Process.Priorities)
+                    rnd.Next(0, Enum.GetNames(typeof(Scheduler.Process.Priorities))
+                    .Length),
+                    rnd.Next(), rnd.Next(1000, 1000000), 
+                    rnd.Next(10, this.scheduler.RamSize));
+                proc.ProcessPropertyChangeEvent += this.Proc_ProcessPropertyChangeEvent;
+                this.AddProcessRangeToTable(new[] { proc });
+            }
         }
     }
 }

@@ -92,6 +92,7 @@ namespace OS_Scheduler.Scheduler
         public IReadOnlyCollection<Process> Processes => queue.Processes;
         public int RamUsage => queue.RamUsage;
         public int MaxPossibleRamUsage => queue.MaxPossibleRamUsage;
+        public Int32 MinimumPossibleRamUsage => queue.MinimumRamUsage ?? 0;
 
         #endregion
 
@@ -124,7 +125,7 @@ namespace OS_Scheduler.Scheduler
         }
         public Scheduler(Int32 quantOfTime = 200, Int32 ramSize = 4096, Int32 mainTimerInterval = 1) : this()
         {
-            this.QuantOfTime = quantOfTime;
+            this.QuantOfTime = this.tempQuantOftime = quantOfTime;
             this.RamSize = this.RamLeft = ramSize;
 
             this.mainTimer.Interval = mainTimerInterval;
@@ -138,11 +139,12 @@ namespace OS_Scheduler.Scheduler
 
         #region MainWorker
 
+        Int32 tempQuantOftime;
         private void MainTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             SchedulerViewerEvent?.Invoke(this, new(this.queue.Processes));
             currentQuant++;
-            if (currentQuant < quantOfTime)
+            if (currentQuant < tempQuantOftime)
                 return;
             currentQuant = 0;
             NextCircle();
@@ -150,11 +152,14 @@ namespace OS_Scheduler.Scheduler
 
         private void NextCircle()
         {
+            tempQuantOftime = quantOfTime;
+            this.StopWork();
+
             if (this.queue.Processes.Count is 0)
             {
                 SchedulerViewerEvent?.Invoke(this, new(this.queue.Processes));
                 return;
-            }    
+            }
 
             if (this.queue.Processes.First().IsWorking)
                 this.queue.Processes.First().PauseWork();
@@ -183,7 +188,13 @@ namespace OS_Scheduler.Scheduler
                 }
                 else
                 {
-                    vs.StartWork(speedOfWork);
+                    if (vs.IsSwapped)
+                        vs.UnSwap();
+
+                    this.ReSwap();
+
+                    this.StartWork();
+                    vs.StartWork(speedOfWork, this.tempQuantOftime);
                     break;
                 }
             }
@@ -211,9 +222,36 @@ namespace OS_Scheduler.Scheduler
             {
 
             }
-            
+
             if (this.mainTimer.Enabled)
                 this.mainTimer.Stop();
+        }
+
+        #endregion
+
+        #region Swapping
+
+        private void ReSwap()
+        {
+            if (this.MaxPossibleRamUsage <= this.RamSize)
+            {
+                if (this.queue.RamSwapped is not 0)
+                {
+                    this.Processes.ToList().ForEach(x => x.UnSwap());
+                }
+
+                return;
+            }
+
+            var vs = this.Processes.Skip(1).Where(x => !x.IsSwapped).OrderByDescending(x => x.NN);
+
+            foreach (var proc in vs)
+            {
+                if (this.queue.RamUsage <= this.RamSize)
+                    break;
+
+                proc.Swap();
+            }
         }
 
         #endregion
@@ -223,6 +261,11 @@ namespace OS_Scheduler.Scheduler
         public Process CreateNewProcess(String Name, Int32 PPID,
             Process.Priorities priority, Int32 RID, Int32 TimeToWork, Int32 Size)
         {
+            if (TimeToWork.Equals(this.ramSize))
+            {
+                throw new Exception("Занимаемая процессором память не должна превышать размер ОЗУ.");
+            }
+
             var process = new Process(Name, PPID, priority, RID, TimeToWork, Size);
             process.ProcessStateChangeEvent += this.Process_ProcessStateChangeEvent;
             this.queue.AddProcess(process);
@@ -232,6 +275,8 @@ namespace OS_Scheduler.Scheduler
             {
                 this.StartWork();
             }
+
+            this.ReSwap();
 
             return process;
         }

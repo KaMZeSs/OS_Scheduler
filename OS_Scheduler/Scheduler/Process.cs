@@ -53,6 +53,9 @@ namespace OS_Scheduler.Scheduler
         Timer timer;
         bool isInfinite;
 
+        Int32 quant;
+        Int32 previousTimeLeft;
+
         #endregion
 
         #region Properties
@@ -314,7 +317,7 @@ namespace OS_Scheduler.Scheduler
         /// Запустить внутренний таймер процесса.
         /// </summary>
         /// <param name="quant">Скорость таймера (как часто уменьшается оставшееся время работы)</param>
-        public void StartWork(Int32 quant)
+        public void StartWork(Int32 speedOfWork, Int32 quant)
         {
             if (this.State is States.COMPLETED)
             {
@@ -333,7 +336,9 @@ namespace OS_Scheduler.Scheduler
                 throw new Exception();
             }
             this.State = States.RUNNING;
-            this.timer.Interval = quant;
+            this.timer.Interval = speedOfWork;
+            this.quant = quant;
+            this.previousTimeLeft = this.TimeLeft;
             this.timer.Start();
         }
 
@@ -349,6 +354,7 @@ namespace OS_Scheduler.Scheduler
             if (this.State is States.COMPLETED || this.State is States.KILLED)
                 return;
 
+            this.timeLeft = this.previousTimeLeft - quant;
             this.State = States.READY;
         }
 
@@ -361,8 +367,6 @@ namespace OS_Scheduler.Scheduler
         {
             this.State = States.COMPLETED;
             this.timer.Stop();
-
-            //TODO Пнуть планировщик
         }
 
         /// <summary>
@@ -393,18 +397,6 @@ namespace OS_Scheduler.Scheduler
         /// <exception cref="Exception"></exception>
         public void Swap()
         {
-            if (!this.IsAlive)
-            {
-                throw new Exception();
-            }
-            if (this.State is States.RUNNING)
-            {
-                throw new Exception();
-            }
-            if (this.IsSwapped)
-            {
-                throw new Exception();
-            }
             this.IsSwapped = true;
         }
 
@@ -414,10 +406,6 @@ namespace OS_Scheduler.Scheduler
         /// <exception cref="Exception"></exception>
         public void UnSwap()
         {
-            if (!this.IsSwapped)
-            {
-                throw new Exception();
-            }
             this.IsSwapped = false;
         }
 

@@ -22,7 +22,7 @@ namespace OS_Scheduler.HelperForms
             InitializeComponent();
         }
 
-        public GetIntForm(String str, int upperBound, int lowerBound = 1)
+        public GetIntForm(String str, int upperBound, int lowerBound = -1)
             : this()
         {
             this.label1.Text = str;
@@ -38,6 +38,7 @@ namespace OS_Scheduler.HelperForms
                 MessageBox.Show("Невозможно определить число");
                 return;
             }
+
             if (vs < lowerBound || vs > upperBound)
             {
                 MessageBox.Show("Число выходит за границы возможных значений");

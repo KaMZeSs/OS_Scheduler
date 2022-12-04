@@ -16,9 +16,41 @@ namespace OS_Scheduler.Scheduler
 
         #region Properties
 
-        public Int32 RamUsage => list.Where(x => !x.IsSwapped).Sum(x => x.Size);
-        public Int32 MaxPossibleRamUsage => list.Sum(x => x.Size);
+        public Int32 RamUsage => list.Where(x => !x.IsSwapped 
+        && (x.State is not Process.States.UNBORN 
+        || x.State is not Process.States.COMPLETED 
+        || x.State is not Process.States.KILLED))
+            .Sum(x => x.Size);
+
+        public Int32 RamSwapped => list.Where(x => x.IsSwapped
+        && (x.State is not Process.States.UNBORN
+        || x.State is not Process.States.COMPLETED
+        || x.State is not Process.States.KILLED))
+            .Sum(x => x.Size);
+
+        public Int32? MinimumRamUsage => list.OrderByDescending(x => x.Size).FirstOrDefault()?.Size;
+
+        public Int32 MaxPossibleRamUsage => list.Where(x => 
+        x.State is not Process.States.UNBORN
+        || x.State is not Process.States.COMPLETED
+        || x.State is not Process.States.KILLED)
+            .Sum(x => x.Size);
         public IReadOnlyCollection<Process> Processes => list;
+
+        private Process.Priorities MaxPriority
+        {
+            get
+            {
+                return list.OrderByDescending(x => x.NN).First().NN;
+            }
+        }
+        private Process.Priorities LowestPriority
+        {
+            get
+            {
+                return list.OrderBy(x => x.NN).First().NN;
+            }
+        }
 
         #endregion
 
